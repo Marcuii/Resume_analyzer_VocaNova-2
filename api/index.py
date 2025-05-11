@@ -40,16 +40,19 @@ def parse_feedback(feedback_text):
             if lower_line.startswith(section.lower()):
                 current_section = section
                 parsed[current_section] = ""
-                continue
+                break  # stop checking once matched
 
         # Add content to current section
         if current_section and stripped:
-            if parsed[current_section]:
-                parsed[current_section] += "\n" + stripped
-            else:
-                parsed[current_section] = stripped
+            if not any(stripped.lower().startswith(s.lower()) for s in sections):
+                parsed[current_section] += " " + stripped
+
+    # Remove extra whitespace and ensure one-liners
+    for key in parsed:
+        parsed[key] = parsed[key].strip().replace('\n', ' ')
 
     return parsed
+
 
 
 def get_resume_feedback(resume_text):
