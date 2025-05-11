@@ -24,19 +24,46 @@ def extract_text_from_pdf(file_path):
             if content:
                 text += content + "\n"
     return text
+def parse_feedback(feedback_text):
+    sections = ["Overall Rating", "Summary", "Strengths", "Weaknesses", 
+                "ATS compatibility analysis", "Formating and readability",
+                "Content and impact", "Grammer and clarity"]
+    parsed = {}
+    current_section = None
+
+    for line in feedback_text.splitlines():
+        stripped = line.strip()
+        lower_line = stripped.lower()
+
+        # Check for section headers
+        for section in sections:
+            if lower_line.startswith(section.lower()):
+                current_section = section
+                parsed[current_section] = ""
+                continue
+
+        # Add content to current section
+        if current_section and stripped:
+            if parsed[current_section]:
+                parsed[current_section] += "\n" + stripped
+            else:
+                parsed[current_section] = stripped
+
+    return parsed
+
 
 def get_resume_feedback(resume_text):
     prompt = f"""
 You are a professional career advisor. Analyze the following resume and provide the following structured feedback:
 
-1. **Overall Rating (out of 100)** — Evaluate the overall quality of the resume.\n
-2. **Summary** — A short paragraph in 1 line summarizing the impression of the resume.\n
-3. **Strengths** — What is working well in this resume? (3-5 bullet points)\n
-4. **Weaknesses** — What is not working well in this resume? (3-5 bullet points)\n
-5. **ATS compatibility analysis** — give an ATS match score for this resume, issue and fix? (each one in one line)\n
-6. **Formating and readability** — what is the issue of formating and fix? (each one in one line)\n
-7. **Content and impact** — what is the issue of content and fix? (each one in one line)\n
-8. **Grammer and clarity** - what is issue of grammer and fix? (each one in one line)\n
+1. **Overall Rating (out of 100)** — Evaluate the overall quality of the resume.
+2. **Summary** — A short paragraph in 1 line summarizing the impression of the resume.
+3. **Strengths** — What is working well in this resume? (3-5 bullet points)
+4. **Weaknesses** — What is not working well in this resume? (3-5 bullet points)
+5. **ATS compatibility analysis** — give an ATS match score for this resume, issue and fix? (each one in one line)
+6. **Formating and readability** — what is the issue of formating and fix? (each one in one line)
+7. **Content and impact** — what is the issue of content and fix? (each one in one line)
+8. **Grammer and clarity** - what is issue of grammer and fix? (each one in one line)
 Resume:
 {resume_text}
 """
