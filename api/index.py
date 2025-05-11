@@ -87,26 +87,6 @@ def parse_feedback(feedback_text):
 def home():
     return jsonify({"message": "Resume Analyzer API Running"})
 
-@app.route('/analyze_resume', methods=['POST'])
-def analyze_resume():
-    if 'resume' not in request.files:
-        return jsonify({'error': 'No file part in the request'}), 400
-
-    file = request.files['resume']
-    if file.filename == '':
-        return jsonify({'error': 'No selected file'}), 400
-
-    try:
-        file_path = f"/tmp/{file.filename}"
-        file.save(file_path)
-
-        resume_text = extract_text_from_pdf(file_path)
-        feedback = get_resume_feedback(resume_text)
-
-        return jsonify({'feedback': feedback})
-
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
 
 @app.route('/analyze_resume_parsed', methods=['POST'])
 def analyze_resume_parsed():
