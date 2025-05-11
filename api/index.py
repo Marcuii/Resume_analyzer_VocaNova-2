@@ -4,6 +4,7 @@ from openai import OpenAI
 import logging
 import warnings
 import os
+import re
 
 warnings.filterwarnings('ignore')
 logging.getLogger("pdfminer").setLevel(logging.ERROR)
@@ -25,34 +26,28 @@ def extract_text_from_pdf(file_path):
                 text += content + "\n"
     return text
 def parse_feedback(feedback_text):
-    sections = ["Overall Rating", "Summary", "Strengths", "Weaknesses", 
-                "ATS compatibility analysis", "Formating and readability",
-                "Content and impact", "Grammer and clarity"]
+    sections = [
+        "Overall Rating", "Summary", "Strengths", "Weaknesses",
+        "ATS Compatibility Analysis", "Formatting and Readability",
+        "Content and Impact", "Grammar and Clarity"
+    ]
+    
     parsed = {}
-    current_section = None
-
-    for line in feedback_text.splitlines():
-        stripped = line.strip()
-        lower_line = stripped.lower()
-
-        # Check for section headers
-        for section in sections:
-            if lower_line.startswith(section.lower()):
-                current_section = section
-                parsed[current_section] = ""
-                break  # stop checking once matched
-
-        # Add content to current section
-        if current_section and stripped:
-            if not any(stripped.lower().startswith(s.lower()) for s in sections):
-                parsed[current_section] += " " + stripped
-
-    # Remove extra whitespace and ensure one-liners
-    for key in parsed:
-        parsed[key] = parsed[key].strip().replace('\n', ' ')
+    
+    # Regex pattern to extract markdown-style "**Section Name:** Content"
+    pattern = r"\*\*(.+?):\*\*\s*(.*?)\s*(?=\*\*.+?:\*\*|$)"
+    matches = re.findall(pattern, feedback_text, re.DOTALL)
+    
+    for title, content in matches:
+        title = title.strip()
+        content = content.replace("\n", " ").strip()
+        parsed[title] = re.sub(r"\s+", " ", content)  # Normalize whitespace to single spaces
+    
+    # Ensure all expected sections are included even if missing
+    for section in sections:
+        parsed.setdefault(section, "")
 
     return parsed
-
 
 
 def get_resume_feedback(resume_text):
