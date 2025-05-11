@@ -52,6 +52,9 @@ Resume:
     )
     return response.choices[0].message.content
 
+@app.route('/', methods=['GET'])
+def home():
+    return jsonify({"message": "Resume Analyzer API Running"})
 @app.route('/analyze_resume', methods=['POST'])
 def analyze_resume():
     if 'resume' not in request.files:
