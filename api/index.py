@@ -25,29 +25,6 @@ def extract_text_from_pdf(file_path):
             if content:
                 text += content + "\n"
     return text
-def parse_feedback(feedback_text):
-    sections = [
-        "Overall Rating", "Summary", "Strengths", "Weaknesses",
-        "ATS Compatibility Analysis", "Formatting and Readability",
-        "Content and Impact", "Grammar and Clarity"
-    ]
-    
-    parsed = {}
-    
-    # Regex pattern to extract markdown-style "**Section Name:** Content"
-    pattern = r"\*\*(.+?):\*\*\s*(.*?)\s*(?=\*\*.+?:\*\*|$)"
-    matches = re.findall(pattern, feedback_text, re.DOTALL)
-    
-    for title, content in matches:
-        title = title.strip()
-        content = content.replace("\n", " ").strip()
-        parsed[title] = re.sub(r"\s+", " ", content)  # Normalize whitespace to single spaces
-    
-    # Ensure all expected sections are included even if missing
-    for section in sections:
-        parsed.setdefault(section, "")
-
-    return parsed
 
 
 def get_resume_feedback(resume_text):
@@ -76,6 +53,35 @@ Resume:
         model=MODEL_NAME
     )
     return response.choices[0].message.content
+# --- Parse Feedback into Structured JSON (1-line each section) ---
+def parse_feedback(feedback_text):
+    sections = [
+        "Overall Rating", "Summary", "Strengths", "Weaknesses", 
+        "ATS Compatibility Analysis", "Formatting and Readability",
+        "Content and Impact", "Grammar and Clarity"
+    ]
+    parsed = {}
+    current_section = None
+    
+    for line in feedback_text.splitlines():
+        stripped = line.strip()
+        lower_line = stripped.lower()
+
+        # Identify section headers
+        for section in sections:
+            if lower_line.startswith(section.lower()):
+                current_section = section
+                parsed[current_section] = ""
+                break
+
+        # Append text to the current section
+        elif current_section and stripped:
+            if parsed[current_section]:
+                parsed[current_section] += " " + stripped
+            else:
+                parsed[current_section] = stripped
+
+    return parsed
 
 @app.route('/', methods=['GET'])
 def home():
@@ -102,5 +108,27 @@ def analyze_resume():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-# Vercel looks for `app` variable in this file
+@app.route('/analyze_resume_parsed', methods=['POST'])
+def analyze_resume_parsed():
+    if 'resume' not in request.files:
+        return jsonify({'error': 'No file part in the request'}), 400
+
+    file = request.files['resume']
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+
+    try:
+        file_path = f"/tmp/{file.filename}"
+        file.save(file_path)
+
+        resume_text = extract_text_from_pdf(file_path)
+        feedback = get_resume_feedback(resume_text)
+        parsed_feedback = parse_feedback(feedback)
+
+        return jsonify(parsed_feedback)
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# Required for Vercel
 app = app
