@@ -53,43 +53,13 @@ Resume:
         model=MODEL_NAME
     )
     return response.choices[0].message.content
-# --- Parse Feedback into Structured JSON (1-line each section) ---
-def parse_feedback(feedback_text):
-    sections = [
-        "Overall Rating", "Summary", "Strengths", "Weaknesses", 
-        "ATS Compatibility Analysis", "Formatting and Readability",
-        "Content and Impact", "Grammar and Clarity"
-    ]
-    parsed = {}
-    current_section = None
-    
-    for line in feedback_text.splitlines():
-        stripped = line.strip()
-        lower_line = stripped.lower()
-
-        # Identify section headers
-        for section in sections:
-            if lower_line.startswith(section.lower()):
-                current_section = section
-                parsed[current_section] = ""
-                break
-
-        # Append text to the current section
-        elif current_section and stripped:
-            if parsed[current_section]:
-                parsed[current_section] += " " + stripped
-            else:
-                parsed[current_section] = stripped
-
-    return parsed
 
 @app.route('/', methods=['GET'])
 def home():
     return jsonify({"message": "Resume Analyzer API Running"})
 
-
-@app.route('/analyze_resume_parsed', methods=['POST'])
-def analyze_resume_parsed():
+@app.route('/analyze_resume', methods=['POST'])
+def analyze_resume():
     if 'resume' not in request.files:
         return jsonify({'error': 'No file part in the request'}), 400
 
@@ -103,12 +73,11 @@ def analyze_resume_parsed():
 
         resume_text = extract_text_from_pdf(file_path)
         feedback = get_resume_feedback(resume_text)
-        parsed_feedback = parse_feedback(feedback)
 
-        return jsonify(parsed_feedback)
+        return jsonify({'feedback': feedback})
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-# Required for Vercel
+# Vercel looks for app variable in this file
 app = app
