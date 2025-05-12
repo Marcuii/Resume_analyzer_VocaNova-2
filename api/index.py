@@ -85,27 +85,27 @@ def parse_feedback_response(response_text):
 def get_resume_feedback(resume_text):
     prompt = f"""You are a professional career advisor. Analyze the following resume and provide feedback in this EXACT format:
 
-1.**Overall Rating:** [score]/100
+**Overall Rating:** [score]/100
 
-2.**Summary:** [one paragraph summary]
+**Summary:** [one paragraph summary]
 
-3.**Strengths:**
+**Strengths:**
 1. [strength 1]
 2. [strength 2]
 3. [strength 3]
 
-4.**Weaknesses:**
+**Weaknesses:**
 1. [weakness 1]
 2. [weakness 2]
 3. [weakness 3]
 
-5.**ATS Rate:** [analysis & percentage]
+**ATS Rate:** [analysis & percentage]
 
-6.**Formatting and Readability:** [what is the issue of formating and fix? each one in one line]
+**Formatting and Readability:** [what is the issue of formating and fix? each one in one line]
 
-7.**Content and Impact:** [what is the issue of content and fix? each one in one line ]
+**Content and Impact:** [what is the issue of content and fix? each one in one line ]
 
-8.**Grammar and Clarity:** [what is issue of grammer and fix? each one in one line]
+**Grammar and Clarity:** [what is issue of grammer and fix? each one in one line]
 
 IMPORTANT: Maintain this exact formatting with the double asterisks for section headers and numbered lists for strengths/weaknesses.
 
