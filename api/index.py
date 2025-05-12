@@ -60,7 +60,7 @@ def parse_feedback_response(response_text):
             current_section = "Strengths"
         elif line == "**Weaknesses:**":
             current_section = "Weaknesses"
-        elif line.startswith("**ATS Compatibility Analysis:"):
+        elif line.startswith("**ATS Rate:"):
             feedback["ATS Compatibility Analysis"] = line.split(":", 1)[1].strip().strip('*').strip()
             current_section = None
         elif line.startswith("**Formatting and Readability:"):
@@ -99,7 +99,7 @@ def get_resume_feedback(resume_text):
 2. [weakness 2]
 3. [weakness 3]
 
-5.**ATS rate:** [analysis]
+5.**ATS Rate:** [analysis & percentage]
 
 6.**Formatting and Readability:** [what is the issue of formating and fix? each one in one line]
 
@@ -149,7 +149,7 @@ def analyze_resume():
         # Clean up the temporary file
         os.remove(file_path)
 
-        return jsonify(feedback)
+        return jsonify(sorted(feedback.items()))
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
