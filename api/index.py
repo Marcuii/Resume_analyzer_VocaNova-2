@@ -31,74 +31,49 @@ def parse_feedback_response(response_text):
     feedback = {
         "Overall Rating": "",
         "Summary": "",
-        "Strengths": "",
-        "Weaknesses": "",
-        "ATS compatibility analysis": "",
-        "Formating and readability": "",
-        "Content and impact": "",
-        "Grammer and clarity": ""
+        "Strengths": [],
+        "Weaknesses": [],
+        "ATS Compatibility Analysis": "",
+        "Formatting and Readability": "",
+        "Content and Impact": "",
+        "Grammar and Clarity": ""
     }
     
     # Split the response into lines
     lines = response_text.split('\n')
     
     current_section = None
-    section_content = []
     
     for line in lines:
         line = line.strip()
         if not line:
             continue
             
-        # Check if line starts a new section
-        if line.lower().startswith("1. overall rating"):
-            current_section = "Overall Rating"
-            section_content = [line.split(":", 1)[1].strip() if ":" in line else ""]
-        elif line.lower().startswith("2. summary"):
-            if current_section:
-                feedback[current_section] = "\n".join(section_content).strip()
-            current_section = "Summary"
-            section_content = [line.split(":", 1)[1].strip() if ":" in line else ""]
-        elif line.lower().startswith("3. strengths"):
-            if current_section:
-                feedback[current_section] = "\n".join(section_content).strip()
+        # Check for section headers
+        if line.startswith("**Overall Rating:**"):
+            feedback["Overall Rating"] = line.split(":", 1)[1].strip()
+        elif line.startswith("**Summary:**"):
+            feedback["Summary"] = line.split(":", 1)[1].strip()
+        elif line == "**Strengths:**":
             current_section = "Strengths"
-            section_content = []
-        elif line.lower().startswith("4. weaknesses"):
-            if current_section:
-                feedback[current_section] = "\n".join(section_content).strip()
+        elif line == "**Weaknesses:**":
             current_section = "Weaknesses"
-            section_content = []
-        elif line.lower().startswith("5. ats compatibility analysis"):
-            if current_section:
-                feedback[current_section] = "\n".join(section_content).strip()
-            current_section = "ATS compatibility analysis"
-            section_content = []
-        elif line.lower().startswith("6. formating and readability"):
-            if current_section:
-                feedback[current_section] = "\n".join(section_content).strip()
-            current_section = "Formating and readability"
-            section_content = []
-        elif line.lower().startswith("7. content and impact"):
-            if current_section:
-                feedback[current_section] = "\n".join(section_content).strip()
-            current_section = "Content and impact"
-            section_content = []
-        elif line.lower().startswith("8. grammer and clarity"):
-            if current_section:
-                feedback[current_section] = "\n".join(section_content).strip()
-            current_section = "Grammer and clarity"
-            section_content = []
+        elif line.startswith("**ATS Compatibility Analysis:**"):
+            feedback["ATS Compatibility Analysis"] = line.split(":", 1)[1].strip()
+        elif line.startswith("**Formatting and Readability:**"):
+            feedback["Formatting and Readability"] = line.split(":", 1)[1].strip()
+        elif line.startswith("**Content and Impact:**"):
+            feedback["Content and Impact"] = line.split(":", 1)[1].strip()
+        elif line.startswith("**Grammar and Clarity:**"):
+            feedback["Grammar and Clarity"] = line.split(":", 1)[1].strip()
         else:
-            if current_section:
-                section_content.append(line)
-    
-    # Add the last section
-    if current_section:
-        feedback[current_section] = "\n".join(section_content).strip()
+            # Handle bullet points for strengths and weaknesses
+            if current_section in ["Strengths", "Weaknesses"] and line.startswith(("1.", "2.", "3.", "4.", "5.", "-")):
+                # Remove the bullet point number/character
+                cleaned_line = re.sub(r'^\d+\.\s*|^-\s*', '', line)
+                feedback[current_section].append(cleaned_line)
     
     return feedback
-
 def get_resume_feedback(resume_text):
     prompt = f"""
 You are a professional career advisor. Analyze the following resume and provide the following structured feedback:
