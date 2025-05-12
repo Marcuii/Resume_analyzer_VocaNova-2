@@ -33,7 +33,7 @@ def parse_feedback_response(response_text):
         "Summary": "",
         "Strengths": [],
         "Weaknesses": [],
-        "ATS Compatibility Analysis": "",
+        "ATS Rate": "",
         "Formatting and Readability": "",
         "Content and Impact": "",
         "Grammar and Clarity": ""
@@ -61,7 +61,7 @@ def parse_feedback_response(response_text):
         elif line == "**Weaknesses:**":
             current_section = "Weaknesses"
         elif line.startswith("**ATS Rate:"):
-            feedback["ATS Compatibility Analysis"] = line.split(":", 1)[1].strip().strip('*').strip()
+            feedback["ATS Rate"] = line.split(":", 1)[1].strip().strip('*').strip()
             current_section = None
         elif line.startswith("**Formatting and Readability:"):
             feedback["Formatting and Readability"] = line.split(":", 1)[1].strip().strip('*').strip()
