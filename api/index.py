@@ -33,7 +33,7 @@ def parse_feedback_response(response_text):
         "Summary": "",
         "Strengths": [],
         "Weaknesses": [],
-        "ATS Rate": "",
+        "ATS Compatibility Analysis": "",
         "Formatting and Readability": "",
         "Content and Impact": "",
         "Grammar and Clarity": ""
@@ -60,8 +60,8 @@ def parse_feedback_response(response_text):
             current_section = "Strengths"
         elif line == "**Weaknesses:**":
             current_section = "Weaknesses"
-        elif line.startswith("**ATS Rate:"):
-            feedback["ATS Rate"] = line.split(":", 1)[1].strip().strip('*').strip()
+        elif line.startswith("**ATS Compatibility Analysis:"):
+            feedback["ATS Compatibility Analysis"] = line.split(":", 1)[1].strip().strip('*').strip()
             current_section = None
         elif line.startswith("**Formatting and Readability:"):
             feedback["Formatting and Readability"] = line.split(":", 1)[1].strip().strip('*').strip()
@@ -99,13 +99,13 @@ def get_resume_feedback(resume_text):
 2. [weakness 2]
 3. [weakness 3]
 
-**ATS Rate:** [analysis & percentage]
+**ATS Compatibility Analysis:** [analysis and give rate score]
 
-**Formatting and Readability:** [what is the issue of formating and fix? each one in one line]
+**Formatting and Readability:** [feedback]
 
-**Content and Impact:** [what is the issue of content and fix? each one in one line ]
+**Content and Impact:** [feedback]
 
-**Grammar and Clarity:** [what is issue of grammer and fix? each one in one line]
+**Grammar and Clarity:** [feedback]
 
 IMPORTANT: Maintain this exact formatting with the double asterisks for section headers and numbered lists for strengths/weaknesses.
 
@@ -149,7 +149,7 @@ def analyze_resume():
         # Clean up the temporary file
         os.remove(file_path)
 
-        return jsonify(sorted(feedback.items()))
+        return jsonify(feedback)
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
