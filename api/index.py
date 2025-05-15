@@ -89,7 +89,7 @@ def get_resume_feedback(resume_text):
 
 **Overall Rating:** [score]/100
 
-**Summary:** [one paragraph summary]
+**Summary:** [one paragraph summary in just 2 lines]
 
 **Strengths:**
 1. [strength 1]
@@ -101,13 +101,13 @@ def get_resume_feedback(resume_text):
 2. [weakness 2]
 3. [weakness 3]
 
-**ATS Compatibility Analysis:** [analysis and give rate score]
+**ATS Compatibility Analysis:** [analysis and give rate score,just 2 lines]
 
-**Formatting and Readability:** [feedback]
+**Formatting and Readability:** [feedback in just 2 lines]
 
-**Content and Impact:** [feedback]
+**Content and Impact:** [feedback in just 2 lines]
 
-**Grammar and Clarity:** [feedback]
+**Grammar and Clarity:** [feedback in just 2 lines]
 
 IMPORTANT: Maintain this exact formatting with the double asterisks for section headers and numbered lists for strengths/weaknesses.
 
