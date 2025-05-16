@@ -11,7 +11,7 @@ warnings.filterwarnings('ignore')
 logging.getLogger("pdfminer").setLevel(logging.ERROR)
 
 app = Flask(__name__)
-CORS(app, origins=["https://vocanova.vercel.app"])
+CORS(app)
 
 # Use environment variable for safety
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
