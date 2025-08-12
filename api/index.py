@@ -15,9 +15,16 @@ CORS(app)
 
 # Use environment variable for safety
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
-client = OpenAI(api_key=OPENAI_API_KEY)
+#client = OpenAI(api_key=OPENAI_API_KEY)
+#MODEL_NAME = "gpt-3.5-turbo"
 
-MODEL_NAME = "gpt-3.5-turbo"
+#Changes from Marcuii:
+client = OpenAI(
+    api_key=OPENAI_API_KEY,
+    base_url="https://api.groq.com/openai/v1"
+)
+
+MODEL_NAME = "meta-llama/llama-3.1-70b-instruct"
 
 def extract_text_from_pdf(file_path):
     text = ""
