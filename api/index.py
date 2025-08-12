@@ -24,7 +24,7 @@ client = OpenAI(
     base_url="https://api.groq.com/openai/v1"
 )
 
-MODEL_NAME = "meta-llama/llama-3.1-70b-instruct"
+MODEL_NAME = "llama-3.3-70b-versatile"
 
 def extract_text_from_pdf(file_path):
     text = ""
@@ -165,3 +165,4 @@ def analyze_resume():
 
 if __name__ == '__main__':
     app.run()
+
